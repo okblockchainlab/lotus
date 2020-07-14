@@ -7,6 +7,7 @@ import (
 	"text/tabwriter"
 	"time"
 
+	"github.com/fatih/color"
 	cbor "github.com/ipfs/go-ipld-cbor"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -37,6 +38,8 @@ var provingFaultsCmd = &cli.Command{
 	Name:  "faults",
 	Usage: "View the currently known proving faulty sectors information",
 	Action: func(cctx *cli.Context) error {
+		color.NoColor = !cctx.Bool("color")
+
 		nodeApi, closer, err := lcli.GetStorageMinerAPI(cctx)
 		if err != nil {
 			return err
@@ -70,6 +73,9 @@ var provingFaultsCmd = &cli.Command{
 				return err
 			}
 		}
+
+		fmt.Printf("Miner: %s\n", color.BlueString("%s", maddr))
+
 		faults, err := mas.Faults.All(100000000000)
 		if err != nil {
 			return err
@@ -106,6 +112,8 @@ var provingInfoCmd = &cli.Command{
 	Name:  "info",
 	Usage: "View current state information",
 	Action: func(cctx *cli.Context) error {
+		color.NoColor = !cctx.Bool("color")
+
 		nodeApi, closer, err := lcli.GetStorageMinerAPI(cctx)
 		if err != nil {
 			return err
@@ -139,6 +147,8 @@ var provingInfoCmd = &cli.Command{
 		if err != nil {
 			return xerrors.Errorf("getting miner deadlines: %w", err)
 		}
+
+		fmt.Printf("Miner: %s\n", color.BlueString("%s", maddr))
 
 		var mas miner.State
 		{
@@ -232,6 +242,8 @@ var provingDeadlinesCmd = &cli.Command{
 	Name:  "deadlines",
 	Usage: "View the current proving period deadlines information",
 	Action: func(cctx *cli.Context) error {
+		color.NoColor = !cctx.Bool("color")
+
 		nodeApi, closer, err := lcli.GetStorageMinerAPI(cctx)
 		if err != nil {
 			return err
@@ -281,6 +293,8 @@ var provingDeadlinesCmd = &cli.Command{
 				return err
 			}
 		}
+
+		fmt.Printf("Miner: %s\n", color.BlueString("%s", maddr))
 
 		tw := tabwriter.NewWriter(os.Stdout, 2, 4, 2, ' ', 0)
 		_, _ = fmt.Fprintln(tw, "deadline\tsectors\tpartitions\tproven")
